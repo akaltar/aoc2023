@@ -41,6 +41,7 @@ pub fn main() void {
     defer allocator.free(input);
 
     var sum: u32 = 0;
+    var power_sum: u32 = 0;
 
     var lines_iter = std.mem.split(u8, input, "\n");
     var game_index: u32 = 1;
@@ -49,20 +50,31 @@ pub fn main() void {
         _ = game_parts_iter.next(); // discard part before ':';
         const draw_part = game_parts_iter.next() orelse @panic("Game has no definition");
 
+        var min_draw = Draw{};
+
         var draws_iter = std.mem.split(u8, draw_part, ";");
         var is_possible = true;
         while (draws_iter.next()) |draw_string| {
             std.debug.print("Full draw: {s}\n", .{draw_string});
             const draw = parse_draw(draw_string) catch @panic("Can't parse a draw");
+
             std.debug.print("parsed: R:{}, G:{}, B:{}\n", .{ draw.red, draw.green, draw.blue });
             if (!is_draw_possible(draw)) is_possible = false;
+
+            if (draw.red > min_draw.red) min_draw.red = draw.red;
+            if (draw.green > min_draw.green) min_draw.green = draw.green;
+            if (draw.blue > min_draw.blue) min_draw.blue = draw.blue;
         }
 
         std.debug.print("\n", .{});
         if (is_possible) sum += game_index;
 
+        const power = min_draw.red * min_draw.green * min_draw.blue;
+        power_sum += power;
+
         game_index += 1;
     }
 
-    std.debug.print("{any}\n", .{sum});
+    std.debug.print("sum: {any}\n", .{sum});
+    std.debug.print("power_sum: {any}\n", .{power_sum});
 }
