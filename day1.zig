@@ -1,10 +1,5 @@
 const std = @import("std");
-
-fn readFile(relativeFilename: []const u8, allocator: anytype) ![]u8 {
-    const file = try std.fs.cwd().openFile(relativeFilename, .{});
-
-    return try file.reader().readAllAlloc(allocator, 10 * 1024 * 1024);
-}
+const common = @import("common.zig");
 
 // Convert 'one' to 1ne, two to 2wo, etc.
 fn digitizeNumbers(text: []u8, allocator: anytype) !void {
@@ -60,7 +55,7 @@ pub fn main() void {
         if (deinit_status) @panic("Leak");
     }
 
-    var input = readFile("day1.txt", allocator) catch @panic("rip reading file");
+    var input = common.readFile("day1.txt", allocator) catch @panic("rip reading file");
     digitizeNumbers(input, allocator) catch @panic("rip digitizing"); // Comment this for part 1
     defer allocator.free(input);
 
